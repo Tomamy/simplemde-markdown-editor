@@ -12,9 +12,11 @@
         local_html = "<p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-sm-7\"> <div class=\"form-control\" disabled>选择的图片</div> </div> <div class=\"col-sm-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div>",
         remote_html = "<div class=\"row\" style=\"margin-top:15px;\"> <div class=\"col-sm-offset-1 col-sm-10\"> <input type=\"text\" name=\"remote\" class=\"form-control input-remote\" placeholder=\"请输入远程图片地址\" required/> </div> </div>";
     var isUpload = false;
-    var callbackFun = null;
-    function run(upload_rul,callback){
+    var callbackFun = null,
+		loading_src;
+    function run(upload_rul,i_loading,callback){
         callbackFun = callback;
+		loading_src = i_loading;
         $("body").append($tpl);         
         //event agent 
         $tpl.bind("click",function(e){
@@ -57,7 +59,7 @@
             return; 
         }
         $tpl.find(".mesg").html("<i class=\"glyphicon glyphicon-hourglass\"></i>&nbsp;图片上传中……"); 
-        $target.html("<img src=\"../images/i_load.gif\" style=\"width:20px;height:20px;\"/>");
+        $target.html("<img src=\""+loading_src+"\" style=\"width:20px;height:20px;\"/>");
         $tpl.find("#upload-form").submit();
         
         $tpl.find(".mesg")

@@ -281,7 +281,7 @@ function drawImage(editor) {
 	var cm = editor.codemirror;
 	var stat = getState(cm);
 	var options = editor.options;
-	options.uploadi(options.upload_rul, function(image_holder) {
+	options.uploadi(options.upload_rul, options.loading_src, function(image_holder) {
 		options.insertTexts.image[0] = options.insertTexts.image[0] + image_holder;
 		_replaceSelection(cm, stat.image, options.insertTexts.image);
 	});
