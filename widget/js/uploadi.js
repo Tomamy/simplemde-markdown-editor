@@ -8,15 +8,17 @@
 })(function(){
     "use strict";
 
-    var $tpl = $("<div id=\"upload-layer\" class=\"upload-layer\"> <iframe name=\"upload-iframe\" style=\"display:none\"></iframe> <div id=\"upload-imgpanel\"> <form action=\"/upload\" id=\"upload-form\" method=\"post\" name=\"upload-form\" enctype=\"multipart/form-data\" target=\"upload-iframe\"> <div class=\"head-wrap\"> <div class=\"text\">插入图片</div> <div class=\"close\"><i class=\"glyphicon glyphicon-remove\"></i></div> </div> <div class=\"content-wrap\"> <ul class=\"nav nav-tabs\"> <li role=\"presentation\" class=\"active\" data-name=\"local\"><a href=\"#\">本地上传</a></li> <li role=\"presentation\" data-name=\"remote\"><a href=\"#\">远程地址获取</a></li> </ul> <div class=\"tabs-panel\"> <p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-sm-7\"> <div class=\"form-control\" disabled>选择的图片</div> </div> <div class=\"col-sm-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div> </div> </div> <div class=\"footer-wrap\"> <div class=\"row\"> <div class=\"col-sm-7 text-right\"> <div class=\"mesg text-info\"></div> </div> <div class=\"col-sm-5 text-right\"> <div class=\"btns\"> <div class=\"btn btn-default cancel\">取消</div> <div class=\"btn btn-primary insert\"> 插入</div></div> </div> </div> </div> </div> </form> </div> </div>"),
-        local_html = "<p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-sm-7\"> <div class=\"form-control\" disabled>选择的图片</div> </div> <div class=\"col-sm-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div>",
+    var tpl = "<div id=\"upload-layer\" class=\"upload-layer\"> <iframe name=\"upload-iframe\" style=\"display:none\"></iframe> <div id=\"upload-imgpanel\"> <form action=\"/upload\" id=\"upload-form\" method=\"post\" name=\"upload-form\" enctype=\"multipart/form-data\" target=\"upload-iframe\"> <div class=\"head-wrap\"> <div class=\"text\">插入图片</div> <div class=\"close\"><i class=\"glyphicon glyphicon-remove\"></i></div> </div> <div class=\"content-wrap\"> <ul class=\"nav nav-tabs\"> <li role=\"presentation\" class=\"active\" data-name=\"local\"><a href=\"#\">本地上传</a></li> <li role=\"presentation\" data-name=\"remote\"><a href=\"#\">远程地址获取</a></li> </ul> <div class=\"tabs-panel\"> <p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-7\"> <div class=\"address form-control\" disabled>选择的图片</div> </div> <div class=\"col-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div> </div> </div> <div class=\"footer-wrap\"> <div class=\"row\"> <div class=\"col-7 text-right\"> <div class=\"mesg text-info\"></div> </div> <div class=\"col-5 text-right\"> <div class=\"btns\"> <div class=\"btn btn-default cancel\">取消</div> <div class=\"btn btn-primary insert\"> 插入</div></div> </div> </div> </div> </div> </form> </div> </div>",
+        local_html = "<p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-7\"> <div class=\"form-control\" disabled>选择的图片</div> </div> <div class=\"col-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div>",
         remote_html = "<div class=\"row\" style=\"margin-top:15px;\"> <div class=\"col-sm-offset-1 col-sm-10\"> <input type=\"text\" name=\"remote\" class=\"form-control input-remote\" placeholder=\"请输入远程图片地址\" required/> </div> </div>";
     var isUpload = false;
     var callbackFun = null,
-		loading_src;
-    function run(upload_rul,i_loading,callback){
+		loading_src,data_name="local",$tpl,upload_url;
+    function run(url,i_loading,callback){
         callbackFun = callback;
 		loading_src = i_loading;
+		upload_url = url;
+		$tpl = $(tpl);
         $("body").append($tpl);         
         //event agent 
         $tpl.bind("click",function(e){
@@ -24,14 +26,34 @@
                 $target = $(target);
             if($target.hasClass("upload-layer") || $target.hasClass("close") || $target.parents(".close").length > 0 || $target.hasClass("cancel")){
                 $tpl.remove(); 
+				$tpl = null;
             }else if(target.tagName.toLowerCase() == 'li'){
                 tabsHandler($target); 
             }else if($target.parents("li[role]").length > 0){
                 tabsHandler($target.parents("li[role]")); 
             }else if($target.hasClass("insert")){
-                uploadHandler($target); 
+				try{
+					uploadHandler($target); 
+				}catch(e){}
             }
-        }).find("#upload-form").attr("action",upload_rul);
+        }).find("#upload-form").attr("action",upload_url+"?name="+data_name);
+		$tpl.find("input[type=file]").bind("change",function(e){
+			var target = e.target || e.srcElement;
+			var mime_type = target.files.length > 0 && target.files[0].type;
+			var allowExt ="image/jpg,image/jpeg,image/png";
+			if(allowExt.indexOf(mime_type) == -1){
+				$tpl.find(".mesg")
+				.removeClass("text-info")
+				.removeClass("text-success")
+				.addClass("text-danger")
+				.html("<i class=\"glyphicon glyphicon-ban-circle\"></i>&nbsp;只能上传图片PNG,JPG,JPEG");
+				$(this).val("");
+				$tpl.find(".address").text("选择图片");
+				return;
+			}
+			$tpl.find(".mesg").html("");
+			$tpl.find(".address").text($(this).val());
+		});
     }
     function closeHandler($target){
         $tpl.remove(); 
@@ -40,7 +62,7 @@
         if($target.hasClass("active")){
             return; 
         }
-        var data_name = $target.attr("data-name");
+        data_name = $target.attr("data-name");
         $target.siblings("li").removeClass("active");
         $target.addClass("active");
         if(data_name == "local"){
@@ -53,11 +75,34 @@
         .removeClass("text-danger")
         .removeClass("text-success")
         .addClass("text-info");
+		$tpl.find("#upload-form").attr("action",upload_url+"?name="+data_name);
     };
     function uploadHandler($target){
         if(isUpload){
             return; 
         }
+		isUpload = true;
+		if(data_name == "local"){
+			if(!$tpl.find("input[type=file]").val()){
+				$tpl.find(".mesg")
+				.removeClass("text-info")
+				.removeClass("text-success")
+				.addClass("text-danger")
+				.html("<i class=\"glyphicon glyphicon-ban-circle\"></i>&nbsp;图片不能为空！");
+				isUpload = false;
+				return;
+			}	
+		}else if(data_name == "remote"){
+			if(!$tpl.find("input[type=text]").val()){
+				$tpl.find(".mesg")
+				.removeClass("text-info")
+				.removeClass("text-success")
+				.addClass("text-danger")
+				.html("<i class=\"glyphicon glyphicon-ban-circle\"></i>&nbsp;远程图片地址不能为空！");
+				isUpload = false;
+				return;
+			}
+		}
         $tpl.find(".mesg").html("<i class=\"glyphicon glyphicon-hourglass\"></i>&nbsp;图片上传中……"); 
         $target.html("<img src=\""+loading_src+"\" style=\"width:20px;height:20px;\"/>");
         $tpl.find("#upload-form").submit();
@@ -86,6 +131,7 @@
                         .addClass("text-danger")
                         .html("<i class=\"glyphicon glyphicon-remove\"></i>&nbsp;图片上传失败，请重试!"); 
                     }
+					isUpload = false;
                 }
             },300); 
         })();
