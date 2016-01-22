@@ -6,136 +6,51 @@
 	<link type="text/css" rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/> 
 	<link type="text/css" rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/> 
 	<link type="text/css" rel="stylesheet" href="../dist/simplemde.min.css"/> 
-
-	<style>
-		#upload-layer {
-			width: 100%;
-			height: 100%;
-			position: fixed;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			right: 0;
-			background-color: rgba(0,0,0,.3);
-		}
-		#upload-imgpanel {
-			width: 520px;
-			height: 270px;
-			background-color: #fff;
-			border-radius: 5px;
-			border: 1px solid #ebebeb;
-			box-shadow: 0 0 5px 0 rgba(0,0,0,.15);
-			position: fixed;
-			top: 50%;
-			left: 50%;
-			margin-left: -260px;
-			margin-top: -150px;
-		}
-		#upload-imgpanel .head-wrap {
-			height: 50px;
-			padding: 0 15px;
-			border-bottom: 1px solid #ebebeb;
-			position: relative;
-		}
-		#upload-imgpanel .head-wrap .text {
-			font-size: 1.4em;
-			line-height: 50px;
-			color: #000;
-		}
-		#upload-imgpanel .head-wrap .close {
-			width: 20px;
-			height: 20px;
-			font-size: 1.2em;
-			color: #999;
-			position: absolute;
-			top: 10px;
-			right: 10px;
-			cursor: pointer;
-		}
-		#upload-imgpanel .content-wrap {
-			padding: 15px;
-			height: 150px;
-		}
-		#upload-imgpanel .content-wrap .local-wrap,
-		#upload-imgpanel .content-wrap .remote-wrap {
-			height: 108px;	
-			padding: 10px 0;
-			position: relative;
-		}
-		#upload-imgpanel .local-wrap p{
-			margin: 0;
-			padding: 0;
-			padding-bottom: 3px;
-			font-size: 1em;
-			color: #999;
-		}
-		#upload-imgpanel .local-wrap input[type=file] {
-			width: 82px;
-			height: 34px;
-			position: absolute;
-			top: 0;
-			left: 15px;
-			opacity: 0;	
-			z-index: 2;
-		}
-		#upload-imgpanel .local-wrap .col-sm-3 {
-			overflow: hidden;	
-		}
-		#upload-imgpanel .content-wrap .remote-wrap {
-			padding-top: 30px;	
-		}
-		#upload-imgpanel .footer-wrap {
-			height: 70px;
-			padding: 0 15px;
-			border-top: 1px solid #ebebeb;
-			position: relative;
-			line-height: 70px;
-		}
-		#upload-imgpanel .footer-wrap .btns {
-			display: inline-block;
-		}
-	</style>
+    <link type="text/css" rel="stylesheet" href="../src/css/widget/uploadi.css"/>
 </head>
 <body>
-	<div id="upload-layer">
-		<div id="upload-imgpanel">
-			<div class="head-wrap">
-				<div class="text">插入图片</div>
-				<div class="close"><i class="glyphicon glyphicon-remove"></i></div>
-			</div>	 	
-			<div class="content-wrap">
-				<ul class="nav nav-tabs">
-					<li role="presentation" class="active" data-name="local"><a href="#">本地上传</a></li>
-					<li role="presentation" data-name="remote"><a href="#">远程地址获取</a></li>
-				</ul>
-				<div class="local-wrap show tabs-panel">
-					<p>图片大小不大于2M</p>	
-					<div class="row">
-						<div class="col-sm-7">
-							<input type="text" class="form-control" disabled  placeholder="推动图片到这里"/>	
-						</div>
-						<div class="col-sm-3">
-							<div class="btn btn-default">选择图片</div>		
-							<input type="file" name="imgs"/>
-						</div>
-					</div>
-				</div>
-				<div class="remote-wrap hide tabs-panel">
-					<div class="row">
-						<div class="col-sm-offset-1 col-sm-10">
-							<input type="text" class="form-control" placeholder="请输入远程图片地址"/>	
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="footer-wrap text-right">
-				<div class="btns">
-					<div class="btn btn-default">取消</div>	
-					<div class="btn btn-primary">插入</div>	
-				</div>
-			</div>
-		</div>
-	</div>
+	<div id="upload-layer" class="upload-layer">
+        <iframe name="upload-iframe" style="display:none"></iframe>
+        <div id="upload-imgpanel">
+            <form action="/upload" id="upload-form" method="post" name="upload-form" enctype="multipart/form-data" target="upload-iframe">
+                <div class="head-wrap">
+                     <div class="text">插入图片</div>
+                     <div class="close"><i class="glyphicon glyphicon-remove"></i></div>
+                </div> 
+                <div class="content-wrap">
+                     <ul class="nav nav-tabs">
+                          <li role="presentation" class="active" data-name="local"><a href="#">本地上传</a></li>
+                          <li role="presentation" data-name="remote"><a href="#">远程地址获取</a></li>
+                     </ul>
+                     <div class="tabs-panel">
+                          <p>图片大小不大于2M</p>
+                          <div class="row">
+                               <div class="col-sm-7">
+                                    <div class="form-control" disabled>选择的图片</div>
+                               </div>
+                               <div class="col-sm-3">
+                                    <div class="btn btn-default">选择图片</div>
+                                    <input type="file" name="imgs" />
+                               </div>
+                          </div>
+                     </div>
+                </div>
+                <div class="footer-wrap">
+                     <div class="row">
+                        <div class="col-sm-7 text-right">
+                             <div class="mesg text-info"></div>
+                        </div>
+                        <div class="col-sm-5 text-right">
+                             <div class="btns">
+                                  <div class="btn btn-default cancel">取消</div>
+                                  <input type="submit" class="btn btn-primary insert" value="插入"></div>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            </form>
+        </div>
+    </div>
 	<!--<textarea id="demo"></textarea>-->
 	<script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
