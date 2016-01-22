@@ -6,57 +6,20 @@
 	<link type="text/css" rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/> 
 	<link type="text/css" rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"/> 
 	<link type="text/css" rel="stylesheet" href="../dist/simplemde.min.css"/> 
-    <link type="text/css" rel="stylesheet" href="../src/css/widget/uploadi.css"/>
+    <link type="text/css" rel="stylesheet" href="../widget/css/uploadi.css"/>
 </head>
 <body>
-	<div id="upload-layer" class="upload-layer">
-        <iframe name="upload-iframe" style="display:none"></iframe>
-        <div id="upload-imgpanel">
-            <form action="/upload" id="upload-form" method="post" name="upload-form" enctype="multipart/form-data" target="upload-iframe">
-                <div class="head-wrap">
-                     <div class="text">插入图片</div>
-                     <div class="close"><i class="glyphicon glyphicon-remove"></i></div>
-                </div> 
-                <div class="content-wrap">
-                     <ul class="nav nav-tabs">
-                          <li role="presentation" class="active" data-name="local"><a href="#">本地上传</a></li>
-                          <li role="presentation" data-name="remote"><a href="#">远程地址获取</a></li>
-                     </ul>
-                     <div class="tabs-panel">
-                          <p>图片大小不大于2M</p>
-                          <div class="row">
-                               <div class="col-sm-7">
-                                    <div class="form-control" disabled>选择的图片</div>
-                               </div>
-                               <div class="col-sm-3">
-                                    <div class="btn btn-default">选择图片</div>
-                                    <input type="file" name="imgs" />
-                               </div>
-                          </div>
-                     </div>
-                </div>
-                <div class="footer-wrap">
-                     <div class="row">
-                        <div class="col-sm-7 text-right">
-                             <div class="mesg text-info"></div>
-                        </div>
-                        <div class="col-sm-5 text-right">
-                             <div class="btns">
-                                  <div class="btn btn-default cancel">取消</div>
-                                  <input type="submit" class="btn btn-primary insert" value="插入"></div>
-                             </div>
-                         </div>
-                     </div>
-                </div>
-            </form>
-        </div>
-    </div>
-	<!--<textarea id="demo"></textarea>-->
+	<textarea id="demo"></textarea>
 	<script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
 	<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
 	<script type="text/javascript" src="../dist/simplemde.min.js"></script>
+	<script type="text/javascript" src="../widget/js/uploadi.js"></script>
 	<script>
-		//var simplemde = new SimpleMDE({ element: document.getElementById("demo") });
+		var simplemde = new SimpleMDE({ 
+            element: document.getElementById("demo") ,
+            uploadi: Uploadi,
+            upload_url: '/up'
+        });
 	</script>
 </body>
 </html>
