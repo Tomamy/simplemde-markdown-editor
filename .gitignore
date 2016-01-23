@@ -2,6 +2,7 @@ localtesting/
 node_modules/
 bower_components/
 dist
+upload/
 #For IDE
 *.iml
 *.ipr
