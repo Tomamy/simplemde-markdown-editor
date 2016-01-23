@@ -21,8 +21,25 @@
     "url": "https://github.com/NextStepWebs/simplemde-markdown-editor/issues"
   },
   "dependencies": {
+    "co": "^4.1.0",
+    "co-body": "^1.0.0",
+    "co-busboy": "^1.0.2",
+    "co-fs": "^1.2.0",
+    "co-views": "^0.2.0",
     "codemirror": "codemirror/CodeMirror",
     "codemirror-spell-checker": "nextstepwebs/codemirror-spell-checker",
+    "ejs": "^2.3.4",
+    "koa": "^1.0.0",
+    "koa-basic-auth": "^1.1.1",
+    "koa-compose": "^2.3.0",
+    "koa-csrf": "^2.1.1",
+    "koa-favicon": "^1.2.0",
+    "koa-generic-session": "^1.10.1",
+    "koa-logger": "^1.2.1",
+    "koa-redis": "^2.0.1",
+    "koa-route": "^1.1.4",
+    "koa-session": "^3.1.0",
+    "koa-static": "^2.0.0",
     "marked": "0.3.5"
   },
   "devDependencies": {

@@ -8,7 +8,7 @@
 })(function(){
     "use strict";
 
-    var tpl = "<div id=\"upload-layer\" class=\"upload-layer\"> <iframe name=\"upload-iframe\" style=\"display:none\"></iframe> <div id=\"upload-imgpanel\"> <form action=\"/upload\" id=\"upload-form\" method=\"post\" name=\"upload-form\" enctype=\"multipart/form-data\" target=\"upload-iframe\"> <div class=\"head-wrap\"> <div class=\"text\">插入图片</div> <div class=\"close\"><i class=\"glyphicon glyphicon-remove\"></i></div> </div> <div class=\"content-wrap\"> <ul class=\"nav nav-tabs\"> <li role=\"presentation\" class=\"active\" data-name=\"local\"><a href=\"#\">本地上传</a></li> <li role=\"presentation\" data-name=\"remote\"><a href=\"#\">远程地址获取</a></li> </ul> <div class=\"tabs-panel\"> <p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-7\"> <div class=\"address form-control\" disabled>选择的图片</div> </div> <div class=\"col-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div> </div> </div> <div class=\"footer-wrap\"> <div class=\"row\"> <div class=\"col-7 text-right\"> <div class=\"mesg text-info\"></div> </div> <div class=\"col-5 text-right\"> <div class=\"btns\"> <div class=\"btn btn-default cancel\">取消</div> <div class=\"btn btn-primary insert\"> 插入</div></div> </div> </div> </div> </div> </form> </div> </div>",
+    var tpl = "<div id=\"upload-layer\" class=\"upload-layer\"> <iframe name=\"upload-iframe\" style=\"display:none\"></iframe> <div id=\"upload-imgpanel\"> <form action=\"/upload\" id=\"upload-form\" method=\"post\" name=\"upload-form\" enctype=\"multipart/form-data\" target=\"upload-iframe\"> <div class=\"head-wrap\"> <div class=\"text\">插入图片</div> <div class=\"close\"><i class=\"glyphicon glyphicon-remove\"></i></div> </div> <div class=\"content-wrap\"> <ul class=\"nav nav-tabs\"> <li role=\"presentation\" class=\"active\" data-name=\"local\"><a href=\"#\">本地上传</a></li> <li role=\"presentation\" data-name=\"remote\"><a href=\"#\">远程地址获取</a></li> </ul> <div class=\"tabs-panel\"> <p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-7\"> <div class=\"address form-control\" disabled>选择的图片</div> </div> <div class=\"col-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div> </div> </div> <div class=\"footer-wrap\"> <div class=\"row\"> <div class=\"col-7 text-right\"> <div class=\"mesg text-info\"></div> </div> <div class=\"col-5 text-right\"> <div class=\"btns\"><div class=\"btn btn-default cancel\">取消</div> <div class=\"btn btn-primary insert\"> 插入</div></div> </div> </div> </div> </div> </form> </div> </div>",
         local_html = "<p>图片大小不大于2M</p> <div class=\"row\"> <div class=\"col-7\"> <div class=\"form-control\" disabled>选择的图片</div> </div> <div class=\"col-3\"> <div class=\"btn btn-default\">选择图片</div> <input type=\"file\" name=\"imgs\" required/> </div> </div>",
         remote_html = "<div class=\"row\" style=\"margin-top:15px;\"> <div class=\"col-sm-offset-1 col-sm-10\"> <input type=\"text\" name=\"remote\" class=\"form-control input-remote\" placeholder=\"请输入远程图片地址\" required/> </div> </div>";
     var isUpload = false;
@@ -36,7 +36,7 @@
 					uploadHandler($target); 
 				}catch(e){}
             }
-        }).find("#upload-form").attr("action",upload_url+"?name="+data_name);
+        }).find("#upload-form").attr("action",upload_url);
 		$tpl.find("input[type=file]").bind("change",function(e){
 			var target = e.target || e.srcElement;
 			var mime_type = target.files.length > 0 && target.files[0].type;
@@ -75,7 +75,7 @@
         .removeClass("text-danger")
         .removeClass("text-success")
         .addClass("text-info");
-		$tpl.find("#upload-form").attr("action",upload_url+"?name="+data_name);
+		$tpl.find("#upload-form").attr("action",upload_url);
     };
     function uploadHandler($target){
         if(isUpload){
@@ -101,11 +101,25 @@
 				.html("<i class=\"glyphicon glyphicon-ban-circle\"></i>&nbsp;远程图片地址不能为空！");
 				isUpload = false;
 				return;
+			}else {
+				$tpl.find(".mesg")
+				.removeClass("text-info")
+				.removeClass("text-danger")
+				.addClass("text-success")
+				.html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片插入成功！");
+				isUpload = false;
+				callbackFun && callbackFun($tpl.find("input[type=text]").val());
+				setTimeout(function(){
+					$tpl.remove();
+					$tpl = null;
+				},1000);	
+				return;
 			}
 		}
         $tpl.find(".mesg").html("<i class=\"glyphicon glyphicon-hourglass\"></i>&nbsp;图片上传中……"); 
         $target.html("<img src=\""+loading_src+"\" style=\"width:20px;height:20px;\"/>");
-        $tpl.find("#upload-form").submit();
+        
+		$tpl.find("#upload-form").submit();
         
         $tpl.find(".mesg")
         .removeClass("text-danger")
@@ -116,7 +130,7 @@
         (function(){
             timer = setInterval(function(){
                 var $idoc = $($tpl.find("iframe").prop("contentWindow").document); 
-                var docstr = $idoc.find("body").html();
+                var docstr = $idoc.find("#result").html();
                 if(docstr){
                     clearInterval(timer); 
                     $target.html("插入");
@@ -125,7 +139,12 @@
                         $tpl.find(".mesg").removeClass("text-info")
                         .addClass("text-success")
                         .html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片上传成功!"); 
-                        callbackFun && callbackFun();
+						var ret = JSON.parse(docstr);
+                        callbackFun && callbackFun(ret.data);
+						setTimeout(function(){
+							$tpl.remove();
+							$tpl = null;
+						},1000);	
                     }catch(e){
                         $tpl.find(".mesg").removeClass("text-info")
                         .addClass("text-danger")
