@@ -112,7 +112,7 @@
 				setTimeout(function(){
 					$tpl.remove();
 					$tpl = null;
-				},1000);	
+				},300);	
 				return;
 			}
 		}
@@ -144,7 +144,7 @@
 						setTimeout(function(){
 							$tpl.remove();
 							$tpl = null;
-						},1000);	
+						},300);	
                     }catch(e){
                         $tpl.find(".mesg").removeClass("text-info")
                         .addClass("text-danger")

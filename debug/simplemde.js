@@ -13111,8 +13111,10 @@ function drawImage(editor) {
 	var options = editor.options;
 	if(options.uploadi) {
 		options.uploadi(options.upload_url, options.loading_src, function(image_holder) {
-			options.insertTexts.image[0] = options.insertTexts.image[0] + image_holder;
-			_replaceSelection(cm, stat.image, options.insertTexts.image);
+			var image = [];
+			image.push(options.insertTexts.image[0] + image_holder);
+			image.push(options.insertTexts.image[1]);
+			_replaceSelection(cm, stat.image, image);
 		});
 	} else {
 		_replaceSelection(cm, stat.image, options.insertTexts.image);
