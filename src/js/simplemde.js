@@ -11,7 +11,6 @@ require("codemirror/mode/xml/xml.js");
 require("spell-checker");
 var marked = require("marked");
 
-
 // Some variables
 var isMac = /Mac/.test(navigator.platform);
 
@@ -975,6 +974,7 @@ SimpleMDE.prototype.markdown = function(text) {
 			};
 		}
 
+		markedOptions.renderer = this.renderer;
 
 		// Set options
 		marked.setOptions(markedOptions);
@@ -1431,5 +1431,8 @@ SimpleMDE.prototype.isFullscreenActive = function() {
 
 	return cm.getOption("fullScreen");
 };
+
+//redefine Renderer
+SimpleMDE.prototype.renderer = new marked.Renderer();
 
 module.exports = SimpleMDE;

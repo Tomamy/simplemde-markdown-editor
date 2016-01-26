@@ -102,17 +102,37 @@
 				isUpload = false;
 				return;
 			}else {
-				$tpl.find(".mesg")
-				.removeClass("text-info")
-				.removeClass("text-danger")
-				.addClass("text-success")
-				.html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片插入成功！");
-				isUpload = false;
-				callbackFun && callbackFun($tpl.find("input[type=text]").val());
-				setTimeout(function(){
-					$tpl.remove();
-					$tpl = null;
-				},300);	
+                $tpl.find(".mesg").html("<i class=\"glyphicon glyphicon-hourglass\"></i>&nbsp;图片加载中……"); 
+                $target.html("<img src=\""+loading_src+"\" style=\"width:20px;height:20px;\"/>");
+                var img = new Image();
+                img.onload = function(){
+                    $tpl.find(".mesg")
+                    .removeClass("text-info")
+                    .removeClass("text-danger")
+                    .addClass("text-success")
+                    .html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片插入成功！");
+                    var img_src = img.src; 
+                    if(img_src.indexOf("?") != -1){
+                        img_src += "&img_w="+img.width+"&img_ratio="+(img.height/img.width).toFixed(6); 
+                    }else {
+                        img_src += "?img_w="+img.width+"&img_ratio="+(img.height/img.width).toFixed(6); 
+                    }
+                    callbackFun && callbackFun(img_src);
+                    setTimeout(function(){
+                        $tpl.remove();
+                        $tpl = null;
+                    },300);	
+                    isUpload = false;
+                }
+                img.onerror = function(){
+                    $tpl.find(".mesg")
+                    .removeClass("text-info")
+                    .removeClass("text-success")
+                    .addClass("text-danger")
+                    .html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片插入失败，请确保地址有效，网络正常！");
+                    isUpload = false;
+                }
+                img.src = $tpl.find("input[type=text]").val();
 				return;
 			}
 		}
@@ -126,32 +146,48 @@
         .removeClass("text-success")
         .addClass("text-info");
 
-        var timer;
+        var timer,totalTime = 0;
         (function(){
             timer = setInterval(function(){
+                if(totalTime > 6000){
+                    clearInterval(timer); 
+                    $target.html("插入");
+                    $tpl.find(".mesg")
+                    .removeClass("text-success")
+                    .removeClass("text-info")
+                    .addClass("text-danger")
+                    .html("<i class=\"glyphicon glyphicon-remove\"></i>&nbsp;图片上传失败，请检查网络或者系统升级中!"); 
+                    return;
+                }
                 var $idoc = $($tpl.find("iframe").prop("contentWindow").document); 
                 var docstr = $idoc.find("#result").html();
+
                 if(docstr){
                     clearInterval(timer); 
                     $target.html("插入");
                     try{
                         var ret = JSON.parse(docstr);
-                        $tpl.find(".mesg").removeClass("text-info")
+                        $tpl.find(".mesg")
+                        .removeClass("text-danger")
+                        .removeClass("text-info")
                         .addClass("text-success")
                         .html("<i class=\"glyphicon glyphicon-ok\"></i>&nbsp;图片上传成功!"); 
 						var ret = JSON.parse(docstr);
-                        callbackFun && callbackFun(ret.data);
+                        callbackFun && callbackFun(window.location.origin+ret.data);
 						setTimeout(function(){
 							$tpl.remove();
 							$tpl = null;
 						},300);	
                     }catch(e){
-                        $tpl.find(".mesg").removeClass("text-info")
+                        $tpl.find(".mesg")
+                        .removeClass("text-success")
+                        .removeClass("text-info")
                         .addClass("text-danger")
                         .html("<i class=\"glyphicon glyphicon-remove\"></i>&nbsp;图片上传失败，请重试!"); 
                     }
 					isUpload = false;
                 }
+                totalTime+=300;
             },300); 
         })();
     }
